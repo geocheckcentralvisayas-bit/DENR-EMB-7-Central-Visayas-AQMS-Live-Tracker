@@ -1,0 +1,2996 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AQMS Administrator Portal</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f9;
+      color: #1f2933;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        linear-gradient(
+          135deg,
+          #eef5f1 0%,
+          #f7faf9 50%,
+          #eaf1f5 100%
+        );
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 34px;
+      box-shadow: 0 15px 45px rgba(0,0,0,.10);
+      border: 1px solid #e3e9ed;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 15px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f766e;
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 23px;
+      color: #17323b;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      color: #687780;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334e58;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid #ccd7dc;
+      border-radius: 10px;
+      padding: 12px 13px;
+      background: #fff;
+      outline: none;
+      transition: .15s;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15,118,110,.10);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 82px;
+    }
+
+    .show-password {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: #0f766e;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 16px;
+      background: #0f766e;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary-btn:hover {
+      background: #0b625c;
+    }
+
+    .primary-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .error-box,
+    .success-box,
+    .info-box {
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .error-box {
+      background: #fff0f0;
+      color: #a12828;
+      border: 1px solid #f1c4c4;
+    }
+
+    .success-box {
+      background: #edf9f3;
+      color: #17663c;
+      border: 1px solid #bce4ca;
+    }
+
+    .info-box {
+      background: #eef6fb;
+      color: #225b7a;
+      border: 1px solid #c9e1ef;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid #dfe7ea;
+      height: 72px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: #0f766e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .topbar-title strong {
+      display: block;
+      color: #17323b;
+      font-size: 16px;
+    }
+
+    .topbar-title span {
+      display: block;
+      color: #71818a;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-badge {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #edf8f6;
+      color: #0f766e;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .logout-btn {
+      border: 1px solid #ccd7dc;
+      background: white;
+      color: #455963;
+      border-radius: 9px;
+      padding: 8px 13px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .page {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .welcome {
+      margin-bottom: 22px;
+    }
+
+    .welcome h2 {
+      margin: 0;
+      color: #17323b;
+      font-size: 24px;
+    }
+
+    .welcome p {
+      margin: 7px 0 0;
+      color: #71818a;
+      font-size: 14px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e0e7ea;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.035);
+    }
+
+    .stat-label {
+      color: #74848d;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      margin-top: 7px;
+      color: #17323b;
+    }
+
+    .stat-card.pending .stat-value {
+      color: #b7791f;
+    }
+
+    .stat-card.approved .stat-value {
+      color: #18864b;
+    }
+
+    .stat-card.rejected .stat-value {
+      color: #b83232;
+    }
+
+    .stat-card.expired .stat-value {
+      color: #6b7280;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e0e7ea;
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.035);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid #e6ecef;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #17323b;
+    }
+
+    .panel-header p {
+      margin: 4px 0 0;
+      color: #7a8991;
+      font-size: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar select,
+    .toolbar input {
+      border: 1px solid #ccd7dc;
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: white;
+      color: #344955;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .refresh-btn {
+      border: 1px solid #0f766e;
+      background: #0f766e;
+      color: white;
+      border-radius: 8px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1050px;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 14px;
+      background: #f7f9fa;
+      color: #62737c;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      white-space: nowrap;
+      border-bottom: 1px solid #e2e8eb;
+    }
+
+    td {
+      padding: 13px 14px;
+      font-size: 12px;
+      color: #344955;
+      border-bottom: 1px solid #edf1f3;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fafcfc;
+    }
+
+    .request-id {
+      font-weight: 700;
+      color: #0f766e;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    .status-PENDING {
+      background: #fff6df;
+      color: #986514;
+    }
+
+    .status-APPROVED {
+      background: #eaf8ef;
+      color: #17713f;
+    }
+
+    .status-REJECTED {
+      background: #fff0f0;
+      color: #a42d2d;
+    }
+
+    .status-EXPIRED {
+      background: #eef0f2;
+      color: #65727a;
+    }
+
+    .view-btn {
+      border: 1px solid #cfd9dd;
+      background: #fff;
+      color: #0f766e;
+      border-radius: 7px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 45px 20px;
+      color: #819099;
+      font-size: 13px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #71818a;
+      font-size: 13px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(18,35,42,.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 850px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 25px 80px rgba(0,0,0,.25);
+    }
+
+    .modal-header {
+      padding: 19px 22px;
+      border-bottom: 1px solid #e4eaed;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 2;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #17323b;
+      font-size: 17px;
+    }
+
+    .close-btn {
+      border: 0;
+      background: #f1f4f5;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #52656e;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 22px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .detail {
+      background: #f8fafb;
+      border: 1px solid #e7ecee;
+      border-radius: 9px;
+      padding: 12px;
+    }
+
+    .detail.full {
+      grid-column: 1 / -1;
+    }
+
+    .detail-label {
+      color: #788890;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      letter-spacing: .3px;
+    }
+
+    .detail-value {
+      color: #253d47;
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .scope-box {
+      margin-top: 18px;
+      padding: 15px;
+      border: 1px solid #dfe7ea;
+      border-radius: 10px;
+      background: #fbfcfc;
+    }
+
+    .scope-box h4 {
+      margin: 0 0 12px;
+      color: #17323b;
+      font-size: 13px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid #e5eaec;
+    }
+
+    .approve-btn,
+    .reject-btn,
+    .download-btn,
+    .email-btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .approve-btn {
+      background: #18864b;
+      color: white;
+    }
+
+    .reject-btn {
+      background: #b83232;
+      color: white;
+    }
+
+    .download-btn {
+      background: #0f766e;
+      color: white;
+    }
+
+    .email-btn {
+      background: #edf5f7;
+      color: #245463;
+      border: 1px solid #cbdce1;
+    }
+
+    .reject-area {
+      margin-top: 14px;
+    }
+
+    .reject-area textarea {
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid #ccd7dc;
+      border-radius: 9px;
+      padding: 11px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .reject-area textarea:focus {
+      border-color: #b83232;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #88959c;
+      font-size: 11px;
+      padding: 12px;
+    }
+
+    @media (max-width: 950px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .topbar {
+        padding: 0 15px;
+      }
+
+      .topbar-title span {
+        display: none;
+      }
+
+      .admin-badge {
+        display: none;
+      }
+
+      .page {
+        padding: 18px 12px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 15px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail.full {
+        grid-column: auto;
+      }
+
+      .modal-backdrop {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     LOGIN
+     ============================================================ -->
+
+<div id="loginScreen" class="login-screen">
+
+  <div class="login-card">
+
+    <div class="brand">
+      <div class="brand-icon">AQ</div>
+
+      <h1>AQMS Administrator Portal</h1>
+
+      <p>
+        DENR-EMB Central Visayas<br>
+        Air Quality Monitoring System
+      </p>
+    </div>
+
+    <div id="loginError" class="error-box hidden"></div>
+
+    <div class="field">
+      <label for="username">Administrator Username</label>
+      <input
+        id="username"
+        type="text"
+        autocomplete="username"
+        placeholder="Enter username">
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+
+      <div class="password-wrap">
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter password">
+
+        <button
+          type="button"
+          class="show-password"
+          onclick="togglePassword()">
+          SHOW
+        </button>
+      </div>
+    </div>
+
+    <button
+      id="loginButton"
+      class="primary-btn"
+      onclick="login()">
+      SIGN IN
+    </button>
+
+    <div class="footer-note">
+      Authorized AQMS administration only
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ============================================================
+     APPLICATION
+     ============================================================ -->
+
+<div id="app" class="app hidden">
+
+  <header class="topbar">
+
+    <div class="topbar-title">
+
+      <div class="topbar-icon">
+        AQ
+      </div>
+
+      <div>
+        <strong>AQMS Data Access Administration</strong>
+        <span>DENR-EMB Central Visayas</span>
+      </div>
+
+    </div>
+
+    <div class="topbar-actions">
+
+      <div class="admin-badge">
+        ADMINISTRATOR
+      </div>
+
+      <button
+        class="logout-btn"
+        onclick="logout()">
+        Sign out
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <main class="page">
+
+    <div class="welcome">
+
+      <h2>Access Request Dashboard</h2>
+
+      <p>
+        Review, approve, reject and prepare approved AQMS data requests.
+      </p>
+
+    </div>
+
+
+    <!-- ========================================================
+         STATISTICS
+         ======================================================== -->
+
+    <section class="stats-grid">
+
+      <div class="stat-card pending">
+        <div class="stat-label">
+          Pending
+        </div>
+
+        <div
+          id="pendingCount"
+          class="stat-value">
+          0
+        </div>
+      </div>
+
+
+      <div class="stat-card approved">
+        <div class="stat-label">
+          Approved
+        </div>
+
+        <div
+          id="approvedCount"
+          class="stat-value">
+          0
+        </div>
+      </div>
+
+
+      <div class="stat-card rejected">
+        <div class="stat-label">
+          Rejected
+        </div>
+
+        <div
+          id="rejectedCount"
+          class="stat-value">
+          0
+        </div>
+      </div>
+
+
+      <div class="stat-card expired">
+        <div class="stat-label">
+          Expired
+        </div>
+
+        <div
+          id="expiredCount"
+          class="stat-value">
+          0
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         REQUESTS
+         ======================================================== -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <h3>Data Access Requests</h3>
+
+          <p>
+            Requests submitted by public users.
+          </p>
+        </div>
+
+
+        <div class="toolbar">
+
+          <select
+            id="statusFilter"
+            onchange="loadRequests()">
+
+            <option value="">
+              All requests
+            </option>
+
+            <option value="PENDING">
+              Pending
+            </option>
+
+            <option value="APPROVED">
+              Approved
+            </option>
+
+            <option value="REJECTED">
+              Rejected
+            </option>
+
+            <option value="EXPIRED">
+              Expired
+            </option>
+
+          </select>
+
+
+          <input
+            id="requestSearch"
+            type="search"
+            placeholder="Search requests..."
+            oninput="filterRequestTable()">
+
+
+          <button
+            class="refresh-btn"
+            onclick="refreshDashboard()">
+            Refresh
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="requestLoading"
+        class="loading">
+        Loading requests...
+      </div>
+
+
+      <div
+        id="requestEmpty"
+        class="empty-state hidden">
+        No requests found.
+      </div>
+
+
+      <div
+        id="requestTableWrap"
+        class="table-wrap hidden">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Request ID
+              </th>
+
+              <th>
+                Requester
+              </th>
+
+              <th>
+                Request Type
+              </th>
+
+              <th>
+                Data Type
+              </th>
+
+              <th>
+                Station / LGU
+              </th>
+
+              <th>
+                Parameter
+              </th>
+
+              <th>
+                Submitted
+              </th>
+
+              <th>
+                Status
+              </th>
+
+              <th>
+                Action
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="requestTableBody">
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================
+         AUDIT
+         ======================================================== -->
+
+    <section class="panel">
+
+      <div class="panel-header">
+
+        <div>
+          <h3>Recent Audit Activity</h3>
+
+          <p>
+            Administrative actions recorded by the AQMS system.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div
+        id="auditLoading"
+        class="loading">
+        Loading audit activity...
+      </div>
+
+
+      <div
+        id="auditEmpty"
+        class="empty-state hidden">
+        No audit entries available.
+      </div>
+
+
+      <div
+        id="auditTableWrap"
+        class="table-wrap hidden">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Timestamp
+              </th>
+
+              <th>
+                User
+              </th>
+
+              <th>
+                Action
+              </th>
+
+              <th>
+                Request ID
+              </th>
+
+              <th>
+                Result
+              </th>
+
+              <th>
+                Details
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="auditTableBody">
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+</div>
+
+
+<!-- ============================================================
+     REQUEST DETAILS MODAL
+     ============================================================ -->
+
+<div
+  id="requestModal"
+  class="modal-backdrop hidden">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h3>
+        Access Request Details
+      </h3>
+
+      <button
+        class="close-btn"
+        onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="modalBody"
+      class="modal-body">
+
+      <div class="loading">
+        Loading request...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   APPLICATION STATE
+   ============================================================ */
+
+let sessionToken = "";
+let currentRequests = [];
+let currentRequest = null;
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbzpeUA9GFlhFV_Bp85yzDI2x1AA21ZvQzHVAXAs0RWpMd675VBebcLAAtc6l6dKkHMI/exec";
+
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  const savedToken =
+    sessionStorage.getItem("AQMS_ADMIN_SESSION");
+
+  if (savedToken) {
+
+    sessionToken = savedToken;
+
+    showApplication();
+
+    refreshDashboard().catch(function(error) {
+      sessionToken = "";
+      sessionStorage.removeItem("AQMS_ADMIN_SESSION");
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+      handleServerError(error);
+    });
+
+  }
+
+});
+
+
+/* ============================================================
+   APPS SCRIPT HTTP BRIDGE
+   ============================================================ */
+
+async function callAppsScript(action, payload = {}) {
+  if (
+    typeof google !== "undefined" &&
+    google.script &&
+    google.script.run
+  ) {
+    return new Promise(function(resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result || result.ok === false) {
+            console.error(
+              "AQMS approval backend returned an error:",
+              result && result.error
+                ? result.error
+                : "Empty or unsuccessful response"
+            );
+            reject(new Error(
+              result && result.error
+                ? result.error
+                : "The requested operation failed."
+            ));
+            return;
+          }
+
+          resolve(result);
+        })
+        .withFailureHandler(function(error) {
+          console.error(
+            "AQMS Apps Script bridge failed:",
+            error && error.message
+              ? error.message
+              : error
+          );
+          reject(new Error(
+            error && error.message
+              ? error.message
+              : "The approval server could not complete the request."
+          ));
+        })
+        .approvalAction(action, payload);
+    });
+  }
+
+  const controller = new AbortController();
+  const timeout = window.setTimeout(function() {
+    controller.abort();
+  }, 30000);
+
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(Object.assign({}, payload, {
+        action: action
+      })),
+      redirect: "follow",
+      signal: controller.signal
+    });
+
+    const responseText = await response.text();
+    let result;
+
+    try {
+      result = JSON.parse(responseText);
+    } catch (error) {
+      console.error(
+        "AQMS approval backend returned non-JSON response:",
+        {
+          status: response.status,
+          statusText: response.statusText
+        }
+      );
+      throw new Error(
+        "The approval server returned an unreadable response (HTTP " +
+        response.status +
+        ")."
+      );
+    }
+
+    if (!response.ok || !result || result.ok === false) {
+      console.error(
+        "AQMS approval backend HTTP/application error:",
+        {
+          status: response.status,
+          statusText: response.statusText,
+          error: result && result.error
+            ? result.error
+            : "No backend error was returned"
+        }
+      );
+      throw new Error(
+        result && result.error
+          ? result.error
+          : "The requested operation failed (HTTP " + response.status + ")."
+      );
+    }
+
+    return result;
+  } catch (error) {
+    console.error(
+      "AQMS approval backend request failed:",
+      error
+    );
+
+    if (error && error.name === "AbortError") {
+      throw new Error(
+        "The approval server timed out. Please check your connection and try again."
+      );
+    }
+
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Unable to reach the AQMS approval server. The existing Apps Script deployment may be unavailable or blocked by the browser."
+      );
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+
+async function login() {
+
+  const username =
+    document.getElementById("username")
+      .value
+      .trim();
+
+  const password =
+    document.getElementById("password")
+      .value;
+
+
+  hideLoginError();
+
+
+  if (!username) {
+
+    showLoginError(
+      "Administrator username is required."
+    );
+
+    return;
+
+  }
+
+
+  if (!password) {
+
+    showLoginError(
+      "Administrator password is required."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById("loginButton");
+
+  button.disabled = true;
+  button.textContent = "SIGNING IN...";
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "adminLogin",
+        {
+          username: username,
+          password: password
+        }
+      );
+
+
+    if (!result || !result.ok || !result.sessionToken) {
+
+      throw new Error(
+        result && result.error
+          ? result.error
+          : "Administrator session was not created."
+      );
+
+    }
+
+
+    sessionToken =
+      result.sessionToken;
+
+
+    sessionStorage.setItem(
+      "AQMS_ADMIN_SESSION",
+      sessionToken
+    );
+
+
+    showApplication();
+
+    await refreshDashboard();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Administrator login error:",
+      error
+    );
+
+    showLoginError(
+      error.message ||
+      "Administrator login failed."
+    );
+
+  }
+
+  finally {
+
+    button.disabled = false;
+    button.textContent = "SIGN IN";
+
+  }
+
+}
+
+
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+
+async function logout() {
+
+  try {
+
+    if (sessionToken) {
+
+      await callAppsScript(
+        "logout",
+        {
+          sessionToken: sessionToken
+        }
+      );
+
+    }
+
+  }
+
+  catch (error) {
+
+    console.warn(error);
+
+  }
+
+
+  sessionToken = "";
+
+  sessionStorage.removeItem(
+    "AQMS_ADMIN_SESSION"
+  );
+
+
+  document
+    .getElementById("app")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("loginScreen")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("password")
+    .value = "";
+
+}
+
+
+/* ============================================================
+   SHOW / HIDE APPLICATION
+   ============================================================ */
+
+function showApplication() {
+
+  document
+    .getElementById("loginScreen")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+}
+
+
+/* ============================================================
+   PASSWORD VISIBILITY
+   ============================================================ */
+
+function togglePassword() {
+
+  const input =
+    document.getElementById("password");
+
+  const button =
+    document.querySelector(".show-password");
+
+
+  if (input.type === "password") {
+
+    input.type = "text";
+
+    button.textContent = "HIDE";
+
+  }
+
+  else {
+
+    input.type = "password";
+
+    button.textContent = "SHOW";
+
+  }
+
+}
+
+
+/* ============================================================
+   LOGIN ERROR
+   ============================================================ */
+
+function showLoginError(message) {
+
+  const box =
+    document.getElementById("loginError");
+
+  box.textContent =
+    message;
+
+  box.classList.remove("hidden");
+
+}
+
+
+function hideLoginError() {
+
+  document
+    .getElementById("loginError")
+    .classList.add("hidden");
+
+}
+
+
+/* ============================================================
+   DASHBOARD REFRESH
+   ============================================================ */
+
+async function refreshDashboard() {
+
+  if (!sessionToken) {
+    return;
+  }
+
+
+  try {
+
+    await Promise.all([
+      loadSummary(),
+      loadRequests(),
+      loadAudit()
+    ]);
+
+  }
+
+  catch (error) {
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+
+async function loadSummary() {
+
+  const result =
+    await callAppsScript(
+      "adminSummary",
+      {
+        sessionToken: sessionToken
+      }
+    );
+
+
+  const counts =
+    result.counts || {};
+
+
+  document
+    .getElementById("pendingCount")
+    .textContent =
+      counts.pending || 0;
+
+
+  document
+    .getElementById("approvedCount")
+    .textContent =
+      counts.approved || 0;
+
+
+  document
+    .getElementById("rejectedCount")
+    .textContent =
+      counts.rejected || 0;
+
+
+  document
+    .getElementById("expiredCount")
+    .textContent =
+      counts.expired || 0;
+
+}
+
+
+/* ============================================================
+   REQUEST LIST
+   ============================================================ */
+
+async function loadRequests() {
+
+  const loading =
+    document.getElementById(
+      "requestLoading"
+    );
+
+  const empty =
+    document.getElementById(
+      "requestEmpty"
+    );
+
+  const table =
+    document.getElementById(
+      "requestTableWrap"
+    );
+
+
+  loading.classList.remove("hidden");
+  empty.classList.add("hidden");
+  table.classList.add("hidden");
+
+
+  const status =
+    document.getElementById(
+      "statusFilter"
+    ).value;
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "adminRequests",
+        {
+          sessionToken: sessionToken,
+          status: status
+        }
+      );
+
+
+    currentRequests =
+      Array.isArray(result.requests)
+        ? result.requests
+        : [];
+
+
+    renderRequestTable();
+
+  }
+
+  catch (error) {
+
+    loading.classList.add("hidden");
+
+    empty.textContent =
+      error.message ||
+      "Unable to load requests.";
+
+    empty.classList.remove("hidden");
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   REQUEST TABLE
+   ============================================================ */
+
+function renderRequestTable() {
+
+  const loading =
+    document.getElementById(
+      "requestLoading"
+    );
+
+  const empty =
+    document.getElementById(
+      "requestEmpty"
+    );
+
+  const table =
+    document.getElementById(
+      "requestTableWrap"
+    );
+
+  const body =
+    document.getElementById(
+      "requestTableBody"
+    );
+
+
+  loading.classList.add("hidden");
+
+
+  if (!currentRequests.length) {
+
+    body.innerHTML = "";
+
+    table.classList.add("hidden");
+
+    empty.textContent =
+      "No requests found.";
+
+    empty.classList.remove("hidden");
+
+    return;
+
+  }
+
+
+  empty.classList.add("hidden");
+
+  table.classList.remove("hidden");
+
+
+  body.innerHTML =
+    currentRequests
+      .map(function(request) {
+
+        return `
+          <tr
+            data-search="${escapeAttribute(
+              searchableRequestText(request)
+            )}">
+
+            <td>
+              <span class="request-id">
+                ${escapeHtml(request.requestId)}
+              </span>
+            </td>
+
+            <td>
+              <strong>
+                ${escapeHtml(request.requesterName)}
+              </strong>
+              <br>
+              <span style="color:#819099">
+                ${escapeHtml(request.requesterEmail)}
+              </span>
+            </td>
+
+            <td>
+              ${escapeHtml(request.requestType)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.dataType)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.stationOrLGU)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.parameter)}
+            </td>
+
+            <td>
+              ${formatDate(request.requestDateTime)}
+            </td>
+
+            <td>
+              ${statusBadge(request.status)}
+            </td>
+
+            <td>
+              <button
+                class="view-btn"
+                onclick="openRequest('${escapeJs(request.requestId)}')">
+                VIEW
+              </button>
+            </td>
+
+          </tr>
+        `;
+
+      })
+      .join("");
+
+}
+
+
+/* ============================================================
+   REQUEST SEARCH
+   ============================================================ */
+
+function filterRequestTable() {
+
+  const query =
+    document
+      .getElementById("requestSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const rows =
+    document.querySelectorAll(
+      "#requestTableBody tr"
+    );
+
+
+  rows.forEach(function(row) {
+
+    const text =
+      String(
+        row.dataset.search || ""
+      ).toLowerCase();
+
+
+    row.style.display =
+      !query || text.includes(query)
+        ? ""
+        : "none";
+
+  });
+
+}
+
+
+/* ============================================================
+   REQUEST DETAILS
+   ============================================================ */
+
+async function openRequest(requestId) {
+
+  const modal =
+    document.getElementById(
+      "requestModal"
+    );
+
+  const body =
+    document.getElementById(
+      "modalBody"
+    );
+
+
+  modal.classList.remove("hidden");
+
+
+  body.innerHTML =
+    `<div class="loading">
+      Loading request details...
+    </div>`;
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "adminRequest",
+        {
+          sessionToken: sessionToken,
+          requestId: requestId
+        }
+      );
+
+
+    currentRequest =
+      result.request;
+
+
+    renderRequestDetails(
+      currentRequest
+    );
+
+  }
+
+  catch (error) {
+
+    body.innerHTML =
+      `<div class="error-box">
+        ${escapeHtml(
+          error.message ||
+          "Unable to load request."
+        )}
+      </div>`;
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   REQUEST DETAIL RENDER
+   ============================================================ */
+
+function renderRequestDetails(request) {
+
+  const body =
+    document.getElementById(
+      "modalBody"
+    );
+
+
+  if (!request) {
+
+    body.innerHTML =
+      `<div class="error-box">
+        Request details are unavailable.
+      </div>`;
+
+    return;
+
+  }
+
+
+  const isPending =
+    request.status === "PENDING";
+
+
+  const isApproved =
+    request.status === "APPROVED";
+
+
+  body.innerHTML = `
+
+    <div class="details-grid">
+
+      ${detail(
+        "Request ID",
+        request.requestId
+      )}
+
+      ${detail(
+        "Status",
+        statusBadge(request.status),
+        true
+      )}
+
+      ${detail(
+        "Requester Name",
+        request.requesterName
+      )}
+
+      ${detail(
+        "Requester Email",
+        request.requesterEmail
+      )}
+
+      ${detail(
+        "Contact Number",
+        request.contactNumber
+      )}
+
+      ${detail(
+        "Request Date / Time",
+        formatDate(request.requestDateTime)
+      )}
+
+      ${detail(
+        "Request Type",
+        request.requestType
+      )}
+
+      ${detail(
+        "Data Type",
+        request.dataType
+      )}
+
+      ${detail(
+        "Station / LGU",
+        request.stationOrLGU
+      )}
+
+      ${detail(
+        "Parameter",
+        request.parameter
+      )}
+
+      ${detail(
+        "Date From",
+        request.dateFrom
+      )}
+
+      ${detail(
+        "Date To",
+        request.dateTo
+      )}
+
+      ${detail(
+        "Category",
+        request.category
+      )}
+
+      ${detail(
+        "Data Source",
+        request.dataSource
+      )}
+
+      ${detail(
+        "Records In Scope",
+        request.recordCount
+      )}
+
+      ${detail(
+        "Search Query",
+        request.searchQuery || "None"
+      )}
+
+      ${detail(
+        "Reason",
+        request.reason,
+        true
+      )}
+
+    </div>
+
+
+    <div class="scope-box">
+
+      <h4>
+        Approval Information
+      </h4>
+
+      <div class="details-grid">
+
+        ${detail(
+          "Approved By",
+          request.approvedBy || "—"
+        )}
+
+        ${detail(
+          "Approved Date / Time",
+          formatDate(
+            request.approvedDateTime
+          )
+        )}
+
+        ${detail(
+          "Expiration",
+          formatDate(
+            request.expirationDateTime
+          )
+        )}
+
+        ${detail(
+          "Export Status",
+          request.exportReady
+            ? "Export prepared"
+            : "Not prepared"
+        )}
+
+        ${detail(
+          "Export Records",
+          request.exportRecordCount || "—"
+        )}
+
+        ${detail(
+          "Export Generated",
+          formatDate(
+            request.exportGeneratedDateTime
+          )
+        )}
+
+        ${
+          request.rejectionReason
+            ? detail(
+                "Rejection Reason",
+                request.rejectionReason,
+                true
+              )
+            : ""
+        }
+
+      </div>
+
+    </div>
+
+
+    ${
+      isPending
+        ? `
+          <div class="modal-actions">
+
+            <button
+              class="approve-btn"
+              onclick="approveCurrentRequest()">
+              APPROVE REQUEST
+            </button>
+
+            <button
+              class="reject-btn"
+              onclick="showRejectArea()">
+              REJECT REQUEST
+            </button>
+
+          </div>
+
+          <div
+            id="rejectArea"
+            class="reject-area hidden">
+
+            <label
+              style="
+                display:block;
+                margin-bottom:7px;
+                font-size:12px;
+                font-weight:700;
+                color:#344955;
+              ">
+              Rejection Reason
+            </label>
+
+            <textarea
+              id="rejectionReason"
+              placeholder="Enter the reason for rejecting this request...">
+            </textarea>
+
+            <div
+              style="
+                display:flex;
+                gap:9px;
+                margin-top:10px;
+              ">
+
+              <button
+                class="reject-btn"
+                onclick="rejectCurrentRequest()">
+                CONFIRM REJECTION
+              </button>
+
+            </div>
+
+          </div>
+        `
+        : ""
+    }
+
+
+    ${
+      isApproved
+        ? `
+          <div class="modal-actions">
+
+            ${
+              request.exportReady
+                ? `
+                  <button
+                    class="download-btn"
+                    onclick="downloadCurrentExport()">
+                    DOWNLOAD APPROVED EXPORT
+                  </button>
+                `
+                : `
+                  <div class="info-box" style="margin:0;width:100%;">
+                    The request is approved, but an export file
+                    could not be prepared automatically.
+                  </div>
+                `
+            }
+
+            <button
+              class="email-btn"
+              onclick="prepareEmail()">
+              COPY REQUESTER EMAIL
+            </button>
+
+          </div>
+        `
+        : ""
+    }
+
+  `;
+
+}
+
+
+/* ============================================================
+   DETAIL COMPONENT
+   ============================================================ */
+
+function detail(
+  label,
+  value,
+  full
+) {
+
+  return `
+    <div class="detail ${full ? "full" : ""}">
+
+      <div class="detail-label">
+        ${escapeHtml(label)}
+      </div>
+
+      <div class="detail-value">
+        ${value}
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+/* ============================================================
+   APPROVE
+   ============================================================ */
+
+async function approveCurrentRequest() {
+
+  if (!currentRequest) {
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      "Approve this AQMS data access request?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "approve",
+        {
+          sessionToken: sessionToken,
+          requestId: currentRequest.requestId,
+          requestToken: currentRequest.requestToken,
+          scopeHash: currentRequest.scopeHash
+        }
+      );
+
+
+    alert(
+      result.exportReady
+        ? "Request approved and export prepared."
+        : "Request approved. The export could not be prepared automatically."
+    );
+
+
+    closeModal();
+
+    await refreshDashboard();
+
+  }
+
+  catch (error) {
+
+    alert(
+      error.message ||
+      "Approval failed."
+    );
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   SHOW REJECTION AREA
+   ============================================================ */
+
+function showRejectArea() {
+
+  const area =
+    document.getElementById(
+      "rejectArea"
+    );
+
+
+  if (area) {
+
+    area.classList.remove(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   REJECT
+   ============================================================ */
+
+async function rejectCurrentRequest() {
+
+  if (!currentRequest) {
+    return;
+  }
+
+
+  const reason =
+    document
+      .getElementById(
+        "rejectionReason"
+      )
+      .value
+      .trim();
+
+
+  if (!reason) {
+
+    alert(
+      "A rejection reason is required."
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    window.confirm(
+      "Reject this AQMS data access request?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    await callAppsScript(
+      "reject",
+      {
+        sessionToken: sessionToken,
+        requestId: currentRequest.requestId,
+        rejectionReason: reason
+      }
+    );
+
+
+    alert(
+      "Request rejected successfully."
+    );
+
+
+    closeModal();
+
+    await refreshDashboard();
+
+  }
+
+  catch (error) {
+
+    alert(
+      error.message ||
+      "Rejection failed."
+    );
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   DOWNLOAD APPROVED EXPORT
+   ============================================================ */
+
+async function downloadCurrentExport() {
+
+  if (!currentRequest) {
+    return;
+  }
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "adminDownload",
+        {
+          sessionToken: sessionToken,
+          requestId: currentRequest.requestId
+        }
+      );
+
+
+    if (!result.csv) {
+
+      throw new Error(
+        "The approved export contains no file data."
+      );
+
+    }
+
+
+    downloadTextFile(
+      result.fileName ||
+        (
+          "aqms-approved-" +
+          currentRequest.requestId +
+          ".csv"
+        ),
+      result.csv
+    );
+
+
+    await loadAudit();
+
+  }
+
+  catch (error) {
+
+    alert(
+      error.message ||
+      "Unable to download approved export."
+    );
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   EMAIL PREPARATION
+   ============================================================ */
+
+async function prepareEmail() {
+
+  if (!currentRequest) {
+    return;
+  }
+
+
+  try {
+
+    await callAppsScript(
+      "emailPrepared",
+      {
+        sessionToken: sessionToken,
+        requestId: currentRequest.requestId
+      }
+    );
+
+
+    const email =
+      currentRequest.requesterEmail ||
+      "";
+
+
+    if (navigator.clipboard) {
+
+      await navigator.clipboard.writeText(
+        email
+      );
+
+      alert(
+        "Requester email copied:\n\n" +
+        email
+      );
+
+    }
+
+    else {
+
+      window.prompt(
+        "Copy requester email:",
+        email
+      );
+
+    }
+
+  }
+
+  catch (error) {
+
+    alert(
+      error.message ||
+      "Unable to prepare email."
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   AUDIT LOG
+   ============================================================ */
+
+async function loadAudit() {
+
+  const loading =
+    document.getElementById(
+      "auditLoading"
+    );
+
+  const empty =
+    document.getElementById(
+      "auditEmpty"
+    );
+
+  const table =
+    document.getElementById(
+      "auditTableWrap"
+    );
+
+
+  loading.classList.remove("hidden");
+  empty.classList.add("hidden");
+  table.classList.add("hidden");
+
+
+  try {
+
+    const result =
+      await callAppsScript(
+        "audit",
+        {
+          sessionToken: sessionToken
+        }
+      );
+
+
+    const entries =
+      Array.isArray(result.entries)
+        ? result.entries
+        : [];
+
+
+    loading.classList.add("hidden");
+
+
+    if (!entries.length) {
+
+      empty.classList.remove("hidden");
+
+      return;
+
+    }
+
+
+    table.classList.remove("hidden");
+
+
+    document
+      .getElementById(
+        "auditTableBody"
+      )
+      .innerHTML =
+        entries
+          .slice(0, 100)
+          .map(function(entry) {
+
+            return `
+              <tr>
+
+                <td>
+                  ${formatDate(entry.timestamp)}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    entry.username || "—"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    entry.action || "—"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    entry.requestId || "—"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    entry.result || "—"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    entry.details || "—"
+                  )}
+                </td>
+
+              </tr>
+            `;
+
+          })
+          .join("");
+
+  }
+
+  catch (error) {
+
+    loading.classList.add("hidden");
+
+    empty.textContent =
+      error.message ||
+      "Unable to load audit activity.";
+
+    empty.classList.remove("hidden");
+
+    handleServerError(error);
+
+  }
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL
+   ============================================================ */
+
+function closeModal() {
+
+  document
+    .getElementById(
+      "requestModal"
+    )
+    .classList.add("hidden");
+
+
+  currentRequest = null;
+
+}
+
+
+/* ============================================================
+   STATUS BADGE
+   ============================================================ */
+
+function statusBadge(status) {
+
+  const normalized =
+    String(status || "")
+      .toUpperCase();
+
+
+  return `
+    <span
+      class="status status-${escapeAttribute(
+        normalized
+      )}">
+      ${escapeHtml(
+        normalized || "UNKNOWN"
+      )}
+    </span>
+  `;
+
+}
+
+
+/* ============================================================
+   SEARCHABLE REQUEST TEXT
+   ============================================================ */
+
+function searchableRequestText(request) {
+
+  return [
+    request.requestId,
+    request.requesterName,
+    request.requesterEmail,
+    request.requestType,
+    request.dataType,
+    request.stationOrLGU,
+    request.parameter,
+    request.category,
+    request.dataSource,
+    request.reason,
+    request.status
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+}
+
+
+/* ============================================================
+   DATE FORMATTING
+   ============================================================ */
+
+function formatDate(value) {
+
+  if (!value) {
+    return "—";
+  }
+
+
+  const date =
+    new Date(value);
+
+
+  if (isNaN(date.getTime())) {
+
+    return escapeHtml(
+      String(value)
+    );
+
+  }
+
+
+  return date.toLocaleString(
+    undefined,
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+/* ============================================================
+   DOWNLOAD TEXT FILE
+   ============================================================ */
+
+function downloadTextFile(
+  filename,
+  content
+) {
+
+  const blob =
+    new Blob(
+      [content],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href = url;
+
+  link.download =
+    filename;
+
+
+  document
+    .body
+    .appendChild(link);
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* ============================================================
+   SERVER ERROR HANDLING
+   ============================================================ */
+
+function handleServerError(error) {
+
+  const message =
+    String(
+      error &&
+      error.message
+        ? error.message
+        : error
+    );
+
+
+  if (
+    message.includes(
+      "session has expired"
+    ) ||
+    message.includes(
+      "INVALID_SESSION"
+    ) ||
+    message.includes(
+      "AUTHENTICATION_REQUIRED"
+    )
+  ) {
+
+    sessionToken = "";
+
+    sessionStorage.removeItem(
+      "AQMS_ADMIN_SESSION"
+    );
+
+
+    document
+      .getElementById(
+        "app"
+      )
+      .classList.add(
+        "hidden"
+      );
+
+
+    document
+      .getElementById(
+        "loginScreen"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+  }
+
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+   ============================================================ */
+
+function escapeHtml(value) {
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* ============================================================
+   ESCAPE ATTRIBUTE
+   ============================================================ */
+
+function escapeAttribute(value) {
+
+  return escapeHtml(
+    value
+  );
+
+}
+
+
+/* ============================================================
+   ESCAPE JAVASCRIPT STRING
+   ============================================================ */
+
+function escapeJs(value) {
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+    .replace(
+      /\\/g,
+      "\\\\"
+    )
+    .replace(
+      /'/g,
+      "\\'"
+    )
+    .replace(
+      /\r/g,
+      "\\r"
+    )
+    .replace(
+      /\n/g,
+      "\\n"
+    );
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL WHEN BACKDROP IS CLICKED
+   ============================================================ */
+
+document
+  .getElementById("requestModal")
+  .addEventListener(
+    "click",
+    function(event) {
+
+      if (
+        event.target ===
+        this
+      ) {
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+/* ============================================================
+   ESC KEY
+   ============================================================ */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key === "Escape"
+    ) {
+
+      closeModal();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
