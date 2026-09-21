@@ -1,0 +1,170 @@
+{
+  "name": "AQMS Central Visayas Reference",
+  "dataColors": [
+    "#1479C9",
+    "#1FA88A",
+    "#6F3FB5",
+    "#F4C430",
+    "#F28C28",
+    "#E9424D",
+    "#7B3FB2",
+    "#6B3434"
+  ],
+  "good": "#20A66A",
+  "maximum": "#20A66A",
+  "center": "#F4C430",
+  "minimum": "#E9424D",
+  "null": "#A7B7C7",
+  "background": "#F4F8FC",
+  "foreground": "#17324D",
+  "tableAccent": "#1479C9",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 14,
+      "color": "#17324D"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 11,
+      "color": "#17324D"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 24,
+      "color": "#17324D"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#526B82"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 12,
+            "color": {
+              "solid": {
+                "color": "#17324D"
+              }
+            }
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#D6E5F2"
+              }
+            },
+            "radius": 8,
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "lineStyles": [
+          {
+            "strokeWidth": 2
+          }
+        ],
+        "legend": [
+          {
+            "position": "Bottom",
+            "fontSize": 9,
+            "color": {
+              "solid": {
+                "color": "#526B82"
+              }
+            }
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#526B82"
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": "#D6E5F2"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#526B82"
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": "#D6E5F2"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "donutChart": {
+      "*": {
+        "legend": [
+          {
+            "position": "Right",
+            "fontSize": 9,
+            "color": {
+              "solid": {
+                "color": "#526B82"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "categoryLabels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#526B82"
+              }
+            },
+            "fontSize": 10
+          }
+        ],
+        "calloutValue": [
+          {
+            "fontSize": 24,
+            "color": {
+              "solid": {
+                "color": "#17324D"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

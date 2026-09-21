@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AQMS Data Access Request</title>
+  <style>
+    body{margin:0;background:#f3f8fc;color:#17324d;font:14px "Segoe UI",Arial,sans-serif}.shell{max-width:720px;margin:24px auto;padding:18px}.card{background:#fff;border:1px solid #d7e7f2;border-radius:8px;padding:20px;box-shadow:0 2px 8px #2b66821c}.scope{background:#f7fbfe;border:1px solid #d7e7f2;padding:12px;line-height:1.6}.form{display:grid;gap:12px;margin-top:16px}.form label{display:grid;gap:5px;color:#60778b;font-size:11px;font-weight:800}.form input,.form textarea{border:1px solid #cfe0ee;border-radius:5px;padding:10px;font:inherit}.button{border:0;border-radius:5px;padding:10px 14px;background:#087cc1;color:#fff;font-weight:800;cursor:pointer}.message{display:none;background:#fff5e6;color:#8a5b00;padding:10px;border-radius:5px;margin-top:12px;white-space:pre-line}.message.show{display:block}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <h1>AQMS DATA ACCESS REQUEST</h1>
+      <p>Submit a request for the exact monitoring scope selected in the AQMS dashboard.</p>
+      <div id="scope" class="scope"></div>
+      <div id="message" class="message"></div>
+      <form id="request-form" class="form">
+        <label>FULL NAME<input id="name" autocomplete="name" required></label>
+        <label>EMAIL<input id="email" type="email" autocomplete="email" required></label>
+        <label>CONTACT NUMBER<input id="contact" autocomplete="tel" required></label>
+        <label>REASON / PURPOSE<textarea id="reason" required></textarea></label>
+        <button class="button" type="submit">SUBMIT REQUEST</button>
+      </form>
+    </section>
+  </main>
+  <script>
+    const scope = JSON.parse(decodeURIComponent("<?!= scopeJson ?>"));
+    const APPROVAL_SERVICE_URL = "https://script.google.com/macros/s/AKfycbzpeUA9GFlhFV_Bp85yzDI2x1AA21ZvQzHVAXAs0RWpMd675VBebcLAAtc6l6dKkHMI/exec";
+    const escapeHtml = value => String(value == null ? "" : value).replace(/[&<>"']/g, c => ({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const fields = [["Request Type","requestType"],["Data Type","dataType"],["Station","station"],["LGU","lgu"],["Parameter","parameter"],["Date From","dateFrom"],["Date To","dateTo"],["AQI Category","category"],["Data Source","dataSource"],["Search / Filter State","searchQuery"],["Records in Scope","requestedRecordsCount"]];
+    document.getElementById("scope").innerHTML = fields.map(([label,key]) => `<div><strong>${escapeHtml(label)}:</strong> ${escapeHtml(scope[key] || "All")}</div>`).join("");
+    async function callApprovalBackend(action, payload) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(result => {
+              if (!result || result.ok === false) {
+                reject(new Error(result && result.error || "The approval backend rejected the request."));
+                return;
+              }
+              resolve(result);
+            })
+            .withFailureHandler(error => {
+              reject(new Error(error && error.message || "The approval backend is unavailable."));
+            })
+            .approvalAction(action, payload);
+        });
+      }
+
+      let response;
+      try {
+        response = await fetch(APPROVAL_SERVICE_URL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({...payload, action}),
+          redirect: "follow"
+        });
+      } catch (error) {
+        console.error("AQMS approval backend connection error:", error);
+        throw new Error("The AQMS approval backend is unavailable.");
+      }
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (error) {
+        console.error("AQMS approval backend invalid response:", error);
+        throw new Error("The AQMS approval backend returned an invalid response.");
+      }
+
+      if (!response.ok || !result || result.ok === false) {
+        console.error("AQMS approval backend rejected request:", {
+          status: response.status,
+          error: result && result.error || "Unknown backend error"
+        });
+        throw new Error(result && result.error || "The access request failed.");
+      }
+
+      return result;
+    }
+
+    document.getElementById("request-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const message = document.getElementById("message");
+      const request = {
+        ...scope,
+        requesterName: document.getElementById("name").value.trim(),
+        requesterEmail: document.getElementById("email").value.trim(),
+        contactNumber: document.getElementById("contact").value.trim(),
+        reason: document.getElementById("reason").value.trim(),
+        stationOrLGU: scope.station || "All stations / LGUs",
+        recordCount: scope.requestedRecordsCount || 0
+      };
+
+      callApprovalBackend("submit", {request}).then(result => {
+        message.textContent = `Request submitted.\nRequest ID: ${result.requestId}\nStatus: PENDING`;
+        message.classList.add("show");
+        document.getElementById("request-form").reset();
+      }).catch(error => {
+        console.error("AQMS access request error:", error);
+        message.textContent = error && error.message || "The request could not be submitted.";
+        message.classList.add("show");
+      });
+    });
+  </script>
+</body>
+</html>
