@@ -1596,6 +1596,7 @@
       const advisoryDownload = document.getElementById("advisory-download");
       let advisoryCanvas = null;
       let advisoryObjectUrl = "";
+      let advisoryRenderSequence = 0;
 
       const advisoryRecords = () => Object.values(liveRecords).flat().filter(item => item && item.station && item.timestamp);
       const advisoryDateInput = date => {
@@ -1617,6 +1618,19 @@
         return item.timeText ? date.toLocaleString([], {year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}) : `${formattedDate} · TIME UNAVAILABLE`;
       };
       const advisoryFormatFilterDate = value => new Date(value).toLocaleDateString([], {year: "numeric", month: "long", day: "numeric"}).toUpperCase();
+      function getStationDisplayTitle(stationName) {
+        switch ((stationName || "").trim()) {
+          case "Talisay Station":
+            return "METRO CEBU AMBIENT AIR QUALITY MONITORING STATION";
+          case "Toledo Station":
+            return "CAAMS BRGY. CABITOONAN, TOLEDO CITY, STATION";
+          default:
+            return (stationName || "").toUpperCase();
+        }
+      }
+      function getParameterTitle(parameter) {
+        return (parameter || "").toUpperCase();
+      }
       const advisoryFilterLabel = points => {
         const latest = points.at(-1);
         if (!latest) return "DATE UNAVAILABLE";
@@ -1652,7 +1666,7 @@
         if (line) context.fillText(line, x, currentY);
         return currentY;
       };
-      const advisoryDrawPoster = async (points, latest, parameter, category, filterLabel) => {
+      const advisoryDrawPoster = async (points, latest, parameter, category, filterLabel, selectedStation) => {
         const canvas = document.createElement("canvas");
         canvas.width = 1080;
         canvas.height = 1350;
@@ -1719,9 +1733,8 @@
         context.fillRect(70, 418, 940, 310);
         context.fillStyle = "#17324d";
         context.font = "900 28px Segoe UI, Arial";
-        const stationTitle = advisoryStation.value === "Toledo Station"
-          ? "CAAMS BRGY. CABITOONAN, TOLEDO CITY, STATION"
-          : "METRO CEBU AMBIENT AIR QUALITY MONITORING STATION";
+        const stationTitle = getStationDisplayTitle(selectedStation);
+        const parameterTitle = getParameterTitle(parameter);
         advisoryText(context, stationTitle, 540, 472, 860, 36);
         context.font = "700 19px Segoe UI, Arial";
         context.fillText("(REAL-TIME PARTICULATE MATTER STATION)", 540, 541);
@@ -1816,9 +1829,9 @@
         context.fillStyle = "#17324d";
         context.textAlign = "center";
         context.font = "900 25px Segoe UI, Arial";
-        context.fillText("METRO CEBU PM2.5 AQI TREND", 540, 950);
+        advisoryText(context, stationTitle, 540, 950, 860, 28);
         context.font = "700 16px Segoe UI, Arial";
-        context.fillText("(SELECTED TREND PERIOD)", 540, 977);
+        context.fillText(`${parameterTitle} AQI TREND`, 540, 977);
         const left = 150, right = 936, top = 1016, bottom = 1236;
         const max = Math.max(500, Math.ceil(Math.max(...points.map(item => item[parameter])) / 50) * 50);
         const xFor = index => left + (points.length === 1 ? (right - left) / 2 : index * (right - left) / (points.length - 1));
@@ -1860,8 +1873,8 @@
           if (index % Math.max(1, Math.ceil(points.length / 6)) === 0 || index === points.length - 1) context.fillText(new Date(item.timestamp).toLocaleDateString([], {month: "short", day: "numeric"}), xFor(index), 1264);
         });
         context.font = "700 14px Segoe UI, Arial";
-        const firstLegendLabel = "PM2.5 AQI";
-        const secondLegendLabel = "PM2.5 AQI SAFE LIMIT (100 AQI)";
+        const firstLegendLabel = `${parameterTitle} AQI`;
+        const secondLegendLabel = `${parameterTitle} AQI SAFE LIMIT (100 AQI)`;
         const legendGap = 40;
         const legendItemWidth = 26 + 9;
         const legendWidth = legendItemWidth + context.measureText(firstLegendLabel).width
@@ -1881,6 +1894,7 @@
       };
       async function renderAdvisory() {
         if (!advisoryStation.value) return;
+        const renderSequence = ++advisoryRenderSequence;
         const points = advisorySelectedRecords();
         advisoryDownload.disabled = true;
         if (!points.length) {
@@ -1892,6 +1906,7 @@
         const latest = points.at(-1);
         const category = categoryForValue(latest[advisoryParameter.value]);
         const filterLabel = advisoryFilterLabel(points);
+        const selectedStation = advisoryStation.value;
         console.debug("[AQMS advisory export]", {
           selectedStartDate: advisoryStart.value || null,
           selectedEndDate: advisoryEnd.value || null,
@@ -1899,7 +1914,9 @@
           firstObservationTimestamp: points[0]?.timestamp || null,
           lastObservationTimestamp: latest?.timestamp || null
         });
-        advisoryCanvas = await advisoryDrawPoster(points, latest, advisoryParameter.value, category, filterLabel);
+        const renderedCanvas = await advisoryDrawPoster(points, latest, advisoryParameter.value, category, filterLabel, selectedStation);
+        if (renderSequence !== advisoryRenderSequence) return;
+        advisoryCanvas = renderedCanvas;
         advisoryPreview.innerHTML = "";
         const image = document.createElement("img");
         image.alt = "Generated DENR-EMB Central Visayas Public Service Advisory";
@@ -1932,8 +1949,10 @@
       advisoryPreview.addEventListener("contextmenu", event => event.preventDefault());
       advisoryPreview.addEventListener("dragstart", event => event.preventDefault());
       advisoryPreview.addEventListener("selectstart", event => event.preventDefault());
-      advisoryDownload.addEventListener("click", () => {
+      advisoryDownload.addEventListener("click", async () => {
         if (!advisoryCanvas || !window.aqmsAdminAccess.ensure()) return;
+        await renderAdvisory();
+        if (!advisoryCanvas) return;
         const stationSlug = advisoryStation.value.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toUpperCase();
         const date = advisoryEnd.value ? advisoryEnd.value.slice(0, 10) : "LATEST";
         const link = document.createElement("a");
