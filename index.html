@@ -1697,6 +1697,23 @@
         "ACUTELY UNHEALTHY": "#AE28C5",
         EMERGENCY: "#7A0000"
       };
+      const advisoryPreviewCategoryColors = {
+        GOOD: "#8FE610",
+        FAIR: "#FBFF37",
+        "UNHEALTHY FOR SENSITIVE GROUPS": "#F9A72B",
+        "VERY UNHEALTHY": "#AC0B09",
+        "ACUTELY UNHEALTHY": "#AE28C5",
+        EMERGENCY: "#7A2F00"
+      };
+      const advisoryPreviewCategoryColor = category =>
+        advisoryPreviewCategoryColors[category?.name] || category?.color || "#60778b";
+      const advisoryPreviewCategoryFontColor = (category, surface) => {
+        const categoryName = category?.name || "";
+        if (surface === "category") {
+          return ["GOOD", "FAIR", "UNHEALTHY FOR SENSITIVE GROUPS"].includes(categoryName) ? "#17324d" : "#fff";
+        }
+        return categoryName === "EMERGENCY" ? "#fff" : advisoryPreviewCategoryColor(category);
+      };
       function updateAdvisorySummary(points, latest, category, selectedStation, parameter, filterLabel) {
         const setSummaryText = (id, value) => {
           const element = document.getElementById(id);
@@ -1837,7 +1854,7 @@
         context.fillStyle = "#66727c";
         context.fillStyle = "#8A8A8A";
         context.fillRect(tableLeft, tableTop, tableWidth, headerHeight);
-        context.fillStyle = category?.color || "#60778b";
+        context.fillStyle = advisoryPreviewCategoryColor(category);
         context.fillRect(tableLeft, tableTop + headerHeight, tableWidth, dataHeight);
         context.strokeStyle = "#fff";
         context.lineWidth = 2;
@@ -1855,7 +1872,7 @@
           drawCenteredCellText(label, x, tableTop, colWidths[index], headerHeight, "900 17px Segoe UI, Arial", "#fff");
         });
         const remark = normalizeAqiRemark(latest[parameter === "pm25" ? "remarks25" : "remarks10"]) || category?.name || "NO CATEGORY";
-        const dataTextColor = category?.className === "acute" ? "#FFFFFF" : "#17324d";
+        const dataTextColor = advisoryPreviewCategoryFontColor(category, "category");
         drawCenteredCellText(formatPollutant(parameter), tableLeft, tableTop + headerHeight, colWidths[0], dataHeight, "700 25px Segoe UI, Arial", dataTextColor);
         drawCenteredCellText(String(latest[parameter]), tableLeft + colWidths[0], tableTop + headerHeight, colWidths[1], dataHeight, "700 25px Segoe UI, Arial", dataTextColor);
         const remarkCellX = tableLeft + colWidths[0] + colWidths[1];
@@ -1881,11 +1898,11 @@
         aqiCategories.forEach((entry, index) => {
           const x = 98 + (index % 2) * 470;
           const y = 794 + Math.floor(index / 2) * 39;
-          context.fillStyle = entry.color;
+          context.fillStyle = advisoryPreviewCategoryColor(entry);
           context.beginPath();
           context.arc(x + 9, y - 7, 9, 0, Math.PI * 2);
           context.fill();
-          context.fillStyle = "#fff";
+          context.fillStyle = advisoryPreviewCategoryFontColor(entry, "dark");
           context.font = "700 15px Segoe UI, Arial";
           context.fillText(`${entry.name.toUpperCase()} (${entry.range})`, x + 27, y);
         });
