@@ -1707,13 +1707,7 @@
       };
       const advisoryPreviewCategoryColor = category =>
         advisoryPreviewCategoryColors[category?.name] || category?.color || "#60778b";
-      const advisoryPreviewCategoryFontColor = (category, surface) => {
-        const categoryName = category?.name || "";
-        if (surface === "category") {
-          return ["GOOD", "FAIR", "UNHEALTHY FOR SENSITIVE GROUPS"].includes(categoryName) ? "#17324d" : "#fff";
-        }
-        return categoryName === "EMERGENCY" ? "#fff" : advisoryPreviewCategoryColor(category);
-      };
+      const advisoryPreviewCategoryFontColor = () => "#FFFFFF";
       function updateAdvisorySummary(points, latest, category, selectedStation, parameter, filterLabel) {
         const setSummaryText = (id, value) => {
           const element = document.getElementById(id);
@@ -1760,24 +1754,19 @@
           image.src = source;
         });
         const [background, denrLogo, bagongLogo] = await Promise.all([
-          loadImage("Cebu City Scape.png"),
-          loadImage("assets/denr-logo.png"),
-          loadImage("Bagong Pilipinas transparent.png")
+          loadImage("New Background.png"),
+          loadImage("DENR LOGO.png"),
+          loadImage("New Bagong Pilipinas.png")
         ]);
         if (background?.naturalWidth) {
-          const scale = Math.max(canvas.width / background.naturalWidth, canvas.height / background.naturalHeight);
+          const scale = Math.min(canvas.width / background.naturalWidth, canvas.height / background.naturalHeight);
           const width = background.naturalWidth * scale;
           const height = background.naturalHeight * scale;
-          context.save();
-          context.filter = "blur(5px)";
           context.drawImage(background, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
-          context.restore();
         } else {
           context.fillStyle = "#164b70";
           context.fillRect(0, 0, canvas.width, canvas.height);
         }
-        context.fillStyle = "rgba(5,24,51,.62)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
         const drawContain = (image, x, y, width, height) => {
           if (!image?.naturalWidth) return;
           const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
@@ -1785,9 +1774,13 @@
           const drawHeight = image.naturalHeight * scale;
           context.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
         };
-        const logoGroup = {x: 382, y: 2, width: 316, height: 130};
-        drawContain(denrLogo, logoGroup.x, logoGroup.y + 4, 150, 110);
-        drawContain(bagongLogo, logoGroup.x + 126, logoGroup.y, 190, logoGroup.height);
+        const logoSize = 118;
+        const logoGap = 10;
+        const logoGroupWidth = logoSize * 2 + logoGap;
+        const logoY = 16;
+        const logoX = (canvas.width - logoGroupWidth) / 2;
+        drawContain(denrLogo, logoX, logoY, logoSize, logoSize);
+        drawContain(bagongLogo, logoX + logoSize + logoGap, logoY, logoSize, logoSize);
         context.textAlign = "center";
         context.fillStyle = "#FFD400";
         context.font = "900 58px Segoe UI, Arial";
@@ -1872,7 +1865,7 @@
           drawCenteredCellText(label, x, tableTop, colWidths[index], headerHeight, "900 17px Segoe UI, Arial", "#fff");
         });
         const remark = normalizeAqiRemark(latest[parameter === "pm25" ? "remarks25" : "remarks10"]) || category?.name || "NO CATEGORY";
-        const dataTextColor = advisoryPreviewCategoryFontColor(category, "category");
+        const dataTextColor = advisoryPreviewCategoryFontColor();
         drawCenteredCellText(formatPollutant(parameter), tableLeft, tableTop + headerHeight, colWidths[0], dataHeight, "700 25px Segoe UI, Arial", dataTextColor);
         drawCenteredCellText(String(latest[parameter]), tableLeft + colWidths[0], tableTop + headerHeight, colWidths[1], dataHeight, "700 25px Segoe UI, Arial", dataTextColor);
         const remarkCellX = tableLeft + colWidths[0] + colWidths[1];
@@ -1902,7 +1895,7 @@
           context.beginPath();
           context.arc(x + 9, y - 7, 9, 0, Math.PI * 2);
           context.fill();
-          context.fillStyle = advisoryPreviewCategoryFontColor(entry, "dark");
+          context.fillStyle = advisoryPreviewCategoryFontColor();
           context.font = "700 15px Segoe UI, Arial";
           context.fillText(`${entry.name.toUpperCase()} (${entry.range})`, x + 27, y);
         });
