@@ -149,13 +149,21 @@
     .station.aqi-sensitive .station-details strong,.station.aqi-unhealthy .station-details strong,
     .station.aqi-fair .station-details strong,.station.aqi-acute .station-details strong,
     .station.aqi-very-unhealthy .station-details strong,.station.aqi-emergency .station-details strong{color:var(--ink)}
-    .station-remarks strong{color:var(--muted)}
+    .station-remarks strong{color:inherit}
     .station .view-dashboard,.station.aqi-good .view-dashboard,.station.aqi-sensitive .view-dashboard,
     .station.aqi-unhealthy .view-dashboard,.station.aqi-fair .view-dashboard,
     .station.aqi-acute .view-dashboard,.station.aqi-very-unhealthy .view-dashboard,
     .station.aqi-emergency .view-dashboard{background:#1479c9!important;color:#fff}
     .station.aqi-sensitive .status{background:#f28c28;color:#fff}
     .station.aqi-unhealthy .status,.station.aqi-very-unhealthy .status{background:var(--red)!important;color:#fff}
+    /* =========================================================
+       FINAL CONTINUOUS STATION AQI COLOR CORRECTION
+       ========================================================= */
+    .station-details strong,
+    .station-details [data-live-field="date"],
+    .station-details [data-live-field="time"]{color:#17324d!important}
+    .station-remarks [data-live-category="pm25"],
+    .station-remarks [data-live-category="pm10"]{font-weight:800}
     .station.aqi-acute .status{background:#AE28C5!important;color:#fff}
     .station.aqi-emergency .status{background:#6b3434!important;color:#fff}
     .aqi-sensitive .aqi-face{background:#f28c28!important}
@@ -358,6 +366,7 @@
   </style>
   <style>
     .aqms-map-container{width:100%;height:340px;overflow:hidden;border-radius:5px;box-sizing:border-box}
+    #overview-map,#lgu-map{width:100%;height:100%}
     .aqms-map-container .esri-view,.aqms-map-container .esri-view-root{width:100%;height:100%}
   </style>
   <style>
@@ -376,6 +385,112 @@
     .manual-acute .manual-status{background:#AE28C5!important;color:#FFFFFF!important}
     .manual-acute .manual-note{color:#AE28C5}
     .aqi-reference{justify-content:flex-start;text-align:left;width:auto}
+  </style>
+  <style>
+    /* =====================================================
+       AQMS REFERENCE DASHBOARD SHELL
+       ===================================================== */
+    @media(min-width:951px){
+      body{padding-left:236px;background:
+        radial-gradient(circle at 78% 5%,rgba(8,124,193,.08),transparent 24rem),
+        var(--bg)}
+      .hero{min-height:154px;background:none}
+      .brand{height:154px;margin-left:0;padding:22px 34px;border-bottom:1px solid rgba(255,255,255,.18);background:
+        linear-gradient(90deg,#063967ee,#087cc1a8),
+        url("assets/cebu-bridge.jpg") center/cover;box-shadow:0 8px 24px rgba(6,57,103,.12)}
+      .brand img{width:86px;height:70px}
+      .brand h1{font-size:27px;letter-spacing:.01em}
+      .brand p{font-size:13px;letter-spacing:.08em}
+      .tagline{font-size:15px;line-height:1.35}
+      .nav{position:fixed;z-index:70;inset:0 auto 0 0;width:236px;height:100vh;display:flex;align-items:stretch;flex-direction:column;gap:7px;padding:24px 14px;background:
+        linear-gradient(180deg,#062f57 0%,#063967 58%,#052b4e 100%);box-shadow:8px 0 22px rgba(6,57,103,.16)}
+      .nav a{display:flex;align-items:center;min-height:45px;padding:0 14px;border-radius:9px;color:#d9edfb;font-size:12px;letter-spacing:.01em}
+      .nav a.active{background:#087cc1;color:#fff;box-shadow:0 8px 18px rgba(8,124,193,.28)}
+      .nav a:hover{background:rgba(255,255,255,.1);transform:translateX(3px)}
+      .nav .live-datetime{order:10;margin: auto 0 0;min-width:0;width:100%;padding:12px 8px;border-radius:9px;background:#eb4b4b;box-shadow:0 6px 14px rgba(235,75,75,.2)}
+      main{max-width:none;padding:20px 24px 34px}
+      #overview-page{background:transparent}
+      .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .aqi-guide{grid-column:1 / -1}
+      .row-two{grid-template-columns:minmax(0,1.12fr) minmax(420px,.88fr);gap:16px}
+      .row-three{gap:16px}
+      .card{border-radius:12px;box-shadow:0 3px 12px rgba(43,102,130,.09)}
+      .title{font-size:13px;letter-spacing:.035em}
+      .kpi{min-height:112px;padding:18px}
+      .kpi-icon{width:52px;height:52px}
+      .aqi-guide{padding:14px}
+      .aqi-category{min-height:92px;padding:10px 4px}
+      .station-grid{gap:12px}
+      .station{border-radius:10px}
+      .station h3{padding:12px 4px}
+      .aqms-chat-trigger{right:26px;bottom:24px}
+    }
+  </style>
+  <style>
+    /* =====================================================
+       AQMS LIVE UI / MICRO INTERACTIONS
+       ===================================================== */
+    html{scroll-behavior:smooth}
+    body{overflow-x:hidden;background:
+      radial-gradient(circle at 8% 0%,rgba(51,139,190,.08),transparent 28rem),
+      var(--bg)}
+    .hero{background-size:cover;animation:aqmsHeroAtmosphere 18s ease-in-out infinite alternate}
+    .brand,.card,.aqms-contact-card{position:relative}
+    .nav a{transition:background-color .2s ease,color .2s ease,transform .2s ease}
+    .nav a:hover{transform:translateY(-1px)}
+    .card{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+    .card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(23,50,77,.1);border-color:#b9d9ec}
+    .kpi:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 14px 30px rgba(23,50,77,.18);border-color:#8fc5e2}
+    .kpi:hover .kpi-icon{transform:scale(1.12) rotate(-3deg)}
+    .kpi:active,.aqi-category:active,.station:active,.manual-station:active{transform:scale(.97)}
+    .kpi .kpi-icon{transition:transform .25s ease}
+    .aqi-category{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,background-color .25s ease}
+    .aqi-category:hover{transform:translateY(-5px);box-shadow:0 10px 22px rgba(23,50,77,.14);border-color:#8fc5e2;background-color:#fff}
+    .aqi-category .aqi-face{transition:transform .25s ease}
+    .aqi-category:hover .aqi-face{transform:scale(1.15) rotate(-4deg)}
+    .station,.manual-station{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+    .station:hover,.manual-station:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(23,50,77,.18);border-color:#8fc5e2}
+    button,.btn,.view-dashboard,.trend-controls button,.data-actions button,.aqms-chat-trigger,.aqms-contact-trigger{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,background-color .18s ease}
+    button:hover,.btn:hover,.view-dashboard:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 6px 14px rgba(8,124,193,.2)}
+    button:active,.btn:active,.view-dashboard:active{transform:scale(.96)}
+    .aqms-reveal{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
+    .aqms-reveal.is-visible{opacity:1;transform:none}
+    .aqms-live-pulse{position:relative;display:inline-flex;align-items:center;gap:7px}
+    .aqms-live-pulse::before{content:"";position:relative;width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:currentColor;animation:livePulse 1.6s infinite}
+    .aqms-live-pulse::after{content:"";position:absolute;left:-4px;top:50%;width:16px;height:16px;border:1px solid currentColor;border-radius:50%;opacity:.45;transform:translateY(-50%) scale(.6);animation:liveRing 1.6s infinite}
+    .aqms-reveal.is-visible.kpi:hover,.aqms-reveal.is-visible.station:hover,.aqms-reveal.is-visible.manual-station:hover,.aqms-reveal.is-visible.aqi-category:hover{opacity:1}
+    .aqms-reveal.is-visible.kpi:hover{transform:translateY(-6px) scale(1.015)}
+    .aqms-reveal.is-visible.station:hover,.aqms-reveal.is-visible.manual-station:hover{transform:translateY(-6px)}
+    .aqms-reveal.is-visible.aqi-category:hover{transform:translateY(-5px)}
+    .aqms-pointer-hover.kpi{animation:aqmsKpiLift .25s ease forwards!important;box-shadow:0 14px 30px rgba(23,50,77,.18)!important;border-color:#8fc5e2!important}
+    .aqms-pointer-hover.station,.aqms-pointer-hover.manual-station{animation:aqmsStationLift .25s ease forwards!important;box-shadow:0 14px 30px rgba(23,50,77,.18)!important;border-color:#8fc5e2!important}
+    .aqms-pointer-hover.aqi-category{animation:aqmsAqiLift .25s ease forwards!important;box-shadow:0 10px 22px rgba(23,50,77,.14)!important;border-color:#8fc5e2!important}
+    .aqms-pointer-hover.aqi-category .aqi-face{animation:aqmsFaceTilt .25s ease forwards!important}
+    .station.aqms-selected,.manual-station.aqms-selected{border-color:var(--blue);box-shadow:0 0 0 3px rgba(8,124,193,.15),0 12px 28px rgba(23,50,77,.12)}
+    .trend-viewport .point-marker{transition: r .18s ease,filter .18s ease}
+    .trend-viewport .point-marker{transform-box:fill-box;transform-origin:center;animation:aqmsPointPop .45s ease both}
+    .trend-viewport .trend-line{stroke-dasharray:8 5;animation:aqmsLineDraw .9s ease both}
+    .trend-viewport .point-hit:hover{cursor:pointer}
+    @keyframes livePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+    @keyframes liveRing{0%{transform:translateY(-50%) scale(.6);opacity:.6}70%{transform:translateY(-50%) scale(1.5);opacity:0}100%{opacity:0}}
+    .aqms-ripple{position:absolute;pointer-events:none;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:aqmsRipple .55s ease-out}
+    .kpi .number{font-variant-numeric:tabular-nums}
+    .trend-range.active,.range-options button.active{box-shadow:0 0 0 3px rgba(42,126,184,.14)}
+    @keyframes aqmsHeroAtmosphere{from{background-position:48% 50%}to{background-position:52% 46%}}
+    @keyframes aqmsKpiLift{from{transform:translateY(0) scale(1)}to{transform:translateY(-6px) scale(1.015)}}
+    @keyframes aqmsStationLift{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+    @keyframes aqmsAqiLift{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+    @keyframes aqmsFaceTilt{from{transform:scale(1) rotate(0)}to{transform:scale(1.15) rotate(-4deg)}}
+    @keyframes aqmsPageIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes aqmsPointPop{from{opacity:0;transform:scale(.35)}to{opacity:1;transform:scale(1)}}
+    @keyframes aqmsLineDraw{from{stroke-dashoffset:40;opacity:.25}to{stroke-dashoffset:0;opacity:1}}
+    @keyframes aqmsRipple{to{transform:scale(2.8);opacity:0}}
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      .hero,.aqms-live-pulse::before{animation:none}
+      .aqms-reveal{opacity:1;transform:none;transition:none}
+      .card,.nav a,.aqi-category,.station,button,.btn{transition:none}
+    }
   </style>
 </head>
 <body>
@@ -403,8 +518,8 @@
     </section>
     <section class="grid row-two" style="margin-top:10px">
       <article class="card"><div class="title">▥ Continuous Station Status</div><div class="station-grid">
-        <div class="station" data-live-station="toledo"><h3>TOLEDO STATION</h3><div class="metric" data-live-metric="pm25">--<small>PM 2.5 (µg/m³)</small></div><div class="metric" data-live-metric="pm10">--<small>PM 10 (µg/m³)</small></div><div class="station-details"><span><strong data-live-field="date">--</strong>Latest Date</span><span><strong data-live-field="time">--</strong>Latest Time</span></div><div class="station-remarks">PM2.5: <strong data-live-category="pm25">--</strong> &nbsp;|&nbsp; PM10: <strong data-live-category="pm10">--</strong></div><div class="status" data-live-field="status">--</div><a class="view-dashboard" href="#" aria-label="View Toledo dashboard">View Dashboard →</a></div>
-        <div class="station aqi-unhealthy" data-live-station="talisay"><h3>TALISAY STATION</h3><div class="metric" data-live-metric="pm25">--<small>PM 2.5 (µg/m³)</small></div><div class="metric" data-live-metric="pm10">--<small>PM 10 (µg/m³)</small></div><div class="station-details"><span><strong data-live-field="date">--</strong>Latest Date</span><span><strong data-live-field="time">--</strong>Latest Time</span></div><div class="station-remarks">PM2.5: <strong data-live-category="pm25">--</strong> &nbsp;|&nbsp; PM10: <strong data-live-category="pm10">--</strong></div><div class="status" data-live-field="status">--</div><a class="view-dashboard" href="#" aria-label="View Talisay dashboard">View Dashboard →</a></div>
+        <div class="station" data-live-station="toledo"><h3 data-live-station-name="toledo"></h3><div class="metric" data-live-metric="pm25">--<small>PM 2.5 (µg/m³)</small></div><div class="metric" data-live-metric="pm10">--<small>PM 10 (µg/m³)</small></div><div class="station-details"><span><strong data-live-field="date">--</strong>Latest Date</span><span><strong data-live-field="time">--</strong>Latest Time</span></div><div class="station-remarks">PM2.5: <strong data-live-category="pm25">--</strong> &nbsp;|&nbsp; PM10: <strong data-live-category="pm10">--</strong></div><div class="status" data-live-field="status">--</div><a class="view-dashboard" href="#" aria-label="View Toledo dashboard">View Dashboard →</a></div>
+        <div class="station aqi-unhealthy" data-live-station="talisay"><h3 data-live-station-name="talisay"></h3><div class="metric" data-live-metric="pm25">--<small>PM 2.5 (µg/m³)</small></div><div class="metric" data-live-metric="pm10">--<small>PM 10 (µg/m³)</small></div><div class="station-details"><span><strong data-live-field="date">--</strong>Latest Date</span><span><strong data-live-field="time">--</strong>Latest Time</span></div><div class="station-remarks">PM2.5: <strong data-live-category="pm25">--</strong> &nbsp;|&nbsp; PM10: <strong data-live-category="pm10">--</strong></div><div class="status" data-live-field="status">--</div><a class="view-dashboard" href="#" aria-label="View Talisay dashboard">View Dashboard →</a></div>
       </div><section class="current-air-quality-summary" id="current-air-quality-summary" aria-labelledby="current-air-quality-summary-title">
         <div class="summary-header"><div class="title" id="current-air-quality-summary-title">Current Air Quality Summary</div><span class="summary-live" id="summary-live-status">● LIVE</span></div>
         <div class="summary-condition" id="summary-condition"><span class="summary-condition-label">Current Condition</span><strong class="summary-condition-value" id="summary-condition-value">No current continuous monitoring result is available.</strong></div>
@@ -433,7 +548,7 @@
       <div class="manual-slider" id="overview-manual-data" aria-label="Manual LGU stations"><span class="no-data">Loading actual manual monitoring records…</span></div>
     </section>
     <section class="grid row-three" style="margin-top:10px">
-      <article class="card trend-card"><div class="trend-header"><div><div class="trend-heading">⌁ Central Visayas Air Quality Trend <span class="trend-live" id="trend-live-status">● LIVE</span> <small id="trend-live-updated">Waiting for data…</small></div><div class="trend-subtitle">PM2.5 and PM10 concentrations from continuous monitoring stations</div></div></div><div class="trend-filter-bar" aria-label="Trend filters"><div><label>Time Range</label><div class="range-options"><button class="trend-range active" data-range="24">24 Hours</button><button class="trend-range" data-range="3">3 Days</button></div></div><label>Pollutant<select id="trend-pollutant" aria-label="Pollutant"><option value="pm25">PM2.5</option><option value="pm10">PM10</option></select></label><label>Monitoring Station<select id="trend-station" aria-label="Monitoring Station"><option value="regional">All Continuous Stations</option><option value="toledo">Toledo City</option><option value="talisay">Talisay City</option></select></label><label>Historical Date<input class="history-calendar" id="history-calendar" type="date" aria-label="Historical Date"></label></div><div class="trend-scroll-shell"><button class="chart-nav chart-prev" type="button" aria-label="Load previous historical data">‹</button><div class="trend-viewport" id="trend-viewport"><svg id="trend-chart" viewBox="0 0 900 360" role="img" aria-label="AQI / PM Concentration Trend"></svg><div class="chart-tooltip" id="chart-tooltip"></div></div><button class="chart-nav chart-next" type="button" aria-label="Load next historical data">›</button></div><div class="trend-scroll-hint" id="trend-scroll-hint">Use the arrows to load previous or next historical data</div><div class="trend-legend" id="trend-legend"></div><div class="aqi-reference"><strong>AQI Reference Levels</strong><span><i class="aqi-dot good"></i>GOOD (0–50)</span><span><i class="aqi-dot moderate"></i>FAIR (51–100)</span><span><i class="aqi-dot sensitive"></i>UNHEALTHY FOR SENSITIVE GROUPS (101–150)</span><span><i class="aqi-dot unhealthy"></i>VERY UNHEALTHY (151–200)</span><span><i class="aqi-dot very"></i>ACUTELY UNHEALTHY (201–300)</span><span><i class="aqi-dot emergency"></i>EMERGENCY (301–500)</span></div></article>
+      <article class="card trend-card"><div class="trend-header"><div><div class="trend-heading">⌁ Central Visayas Air Quality Trend <span class="trend-live" id="trend-live-status">● LIVE</span> <small id="trend-live-updated">Waiting for data…</small></div><div class="trend-subtitle">PM2.5 and PM10 concentrations from continuous monitoring stations</div></div></div><div class="trend-filter-bar" aria-label="Trend filters"><div><label>Time Range</label><div class="range-options"><button class="trend-range active" data-range="24">24 Hours</button><button class="trend-range" data-range="3">3 Days</button></div></div><label>Pollutant<select id="trend-pollutant" aria-label="Pollutant"><option value="pm25">PM2.5</option><option value="pm10">PM10</option></select></label><label>Monitoring Station<select id="trend-station" aria-label="Monitoring Station"><option value="regional">All Continuous Stations</option><option value="toledo">CAAMS BRGY. CABITOONAN, TOLEDO CITY, STATIONS</option><option value="talisay">METRO CEBU AMBIENT AIR QUALITY MONITORING STATIONS</option></select></label><label>Historical Date<input class="history-calendar" id="history-calendar" type="date" aria-label="Historical Date"></label></div><div class="trend-scroll-shell"><button class="chart-nav chart-prev" type="button" aria-label="Load previous historical data">‹</button><div class="trend-viewport" id="trend-viewport"><svg id="trend-chart" viewBox="0 0 900 360" role="img" aria-label="AQI / PM Concentration Trend"></svg><div class="chart-tooltip" id="chart-tooltip"></div></div><button class="chart-nav chart-next" type="button" aria-label="Load next historical data">›</button></div><div class="trend-scroll-hint" id="trend-scroll-hint">Use the arrows to load previous or next historical data</div><div class="trend-legend" id="trend-legend"></div><div class="aqi-reference"><strong>AQI Reference Levels</strong><span><i class="aqi-dot good"></i>GOOD (0–50)</span><span><i class="aqi-dot moderate"></i>FAIR (51–100)</span><span><i class="aqi-dot sensitive"></i>UNHEALTHY FOR SENSITIVE GROUPS (101–150)</span><span><i class="aqi-dot unhealthy"></i>VERY UNHEALTHY (151–200)</span><span><i class="aqi-dot very"></i>ACUTELY UNHEALTHY (201–300)</span><span><i class="aqi-dot emergency"></i>EMERGENCY (301–500)</span></div></article>
     </section>
     <section class="grid row-two" style="margin-top:10px">
       <article class="card"><div class="title">▤ Latest Monitoring Stations</div><table><thead><tr><th>Station</th><th>Type</th><th>Coordinates</th><th>Status</th></tr></thead><tbody id="station-registry"><tr><td colspan="4" class="no-data">Loading station registry…</td></tr></tbody></table></article>
@@ -1042,6 +1157,15 @@
         {name: "ACUTELY UNHEALTHY", range: "201–300", min: 201, max: 300, color: "#AE28C5", className: "acute"},
         {name: "EMERGENCY", range: "301–500", min: 301, max: 500, color: "#6b3434", className: "emergency"}
       ];
+      const continuousStationDisplayNames = {
+        talisay: "METRO CEBU AMBIENT AIR QUALITY MONITORING STATIONS",
+        toledo: "CAAMS BRGY. CABITOONAN, TOLEDO CITY, STATIONS"
+      };
+      const getContinuousStationDisplayName = key => continuousStationDisplayNames[key] || String(key || "").toUpperCase();
+      const getStationAqiColor = categoryName => {
+        const normalized = normalizeAqiRemark(categoryName);
+        return aqiCategories.find(category => category.name === normalized)?.color || "#17324d";
+      };
       let selectedRange = "24";
       let calendarNeedsLatestDate = true;
       let records = [];
@@ -2107,20 +2231,30 @@
             item.city.trim() === city && (item.pm25Text || item.pm10Text || item.remarks25 || item.remarks10)
           ).at(-1);
           if (!card || !latest) return;
-          ["pm25", "pm10"].forEach(metric => {
-            const value = latest[metric];
-            const remark = latest[metric === "pm25" ? "remarks25" : "remarks10"];
+          const stationName = card.querySelector("[data-live-station-name]");
+          if (stationName) stationName.textContent = getContinuousStationDisplayName(key);
+          const pm25Value = Number.isFinite(latest.pm25) ? latest.pm25 : null;
+          const pm10Value = Number.isFinite(latest.pm10) ? latest.pm10 : null;
+          const pm25Category = categoryForValue(pm25Value) || {name: normalizeAqiRemark(latest.remarks25)};
+          const pm10Category = categoryForValue(pm10Value) || {name: normalizeAqiRemark(latest.remarks10)};
+          [["pm25", pm25Value, pm25Category], ["pm10", pm10Value, pm10Category]].forEach(([metric, value, category]) => {
+            const categoryElement = card.querySelector(`[data-live-category="${metric}"]`);
             card.querySelector(`[data-live-metric="${metric}"]`).firstChild.textContent = Number.isFinite(value) ? value : "No data";
-            card.querySelector(`[data-live-category="${metric}"]`).textContent = normalizeAqiRemark(remark) || "No data";
+            categoryElement.textContent = category.name || "No data";
+            categoryElement.style.setProperty("color", category.color || getStationAqiColor(category.name), "important");
           });
           const timestamp = latest.timestamp ? new Date(latest.timestamp) : null;
           card.querySelector('[data-live-field="date"]').textContent = timestamp ? timestamp.toLocaleDateString([], {month: "short", day: "numeric", year: "numeric"}) : "No data";
           card.querySelector('[data-live-field="time"]').textContent = timestamp ? timestamp.toLocaleTimeString([], {hour: "numeric", minute: "2-digit"}) : "No data";
-          const status = normalizeAqiRemark(latest.remarks25 || latest.remarks10)
-            || categoryForValue(Number.isFinite(latest.pm25) ? latest.pm25 : latest.pm10)?.name
-            || "";
+          const overallCategory = categoryForValue(pm25Value)
+            || categoryForValue(pm10Value)
+            || {name: normalizeAqiRemark(latest.remarks25 || latest.remarks10)};
+          const status = overallCategory.name || "";
+          const statusColor = overallCategory.color || getStationAqiColor(status);
+          ["date", "time"].forEach(field => card.querySelector(`[data-live-field="${field}"]`).style.setProperty("color", "#17324d", "important"));
           card.querySelector('[data-live-field="status"]').textContent = status || "No data";
           card.className = `station aqi-${categoryClass(status || "")}`;
+          card.querySelector('[data-live-field="status"]').style.setProperty("background-color", statusColor, "important");
         });
       }
 
@@ -2332,7 +2466,7 @@
         const stationRecords = manualRecords.filter(item => item.station === lguSelectedStation && Number.isFinite(item[lguParameter]) && item.timestamp);
         const latestTimestamp = stationRecords.reduce((latest, item) => Math.max(latest, new Date(item.timestamp).getTime()), -Infinity);
         const cutoff = Number.isFinite(latestTimestamp) ? latestTimestamp - lguDays * 86400000 : -Infinity;
-        const points = stationRecords.filter(item => new Date(item.timestamp).getTime() >= cutoff).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp) || b.sourceOrder - a.sourceOrder);
+        const points = stationRecords.filter(item => new Date(item.timestamp).getTime() >= cutoff).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp) || a.sourceOrder - b.sourceOrder);
         if (!points.length) {
           popup.style.display = "none";
           popup.innerHTML = "";
@@ -2692,7 +2826,7 @@
         const firstValidIndex = validIndices[0] || 0;
         const lastValidIndex = validIndices.at(-1) || 0;
         chart.setAttribute("viewBox", `0 0 ${width} ${height}`);
-        const x = index => width - right - ((index - firstValidIndex) / Math.max(lastValidIndex - firstValidIndex, 1)) * (width - left - right);
+        const x = index => left + ((index - firstValidIndex) / Math.max(lastValidIndex - firstValidIndex, 1)) * (width - left - right);
         const y = value => height - bottom - Math.min(Math.max(value, 0), max) / max * (height - top - bottom);
         const bands = aqiCategories.map(category => {
           const bandTop = y(category.max);
@@ -2781,6 +2915,10 @@
             const item = records[Number(event.target.dataset.index)];
             const key = event.target.dataset.key;
             const category = categoryFor(item[key]);
+            chart.querySelectorAll(".point-marker").forEach(marker => marker.setAttribute("r", "7"));
+            if (event.target.previousElementSibling?.classList.contains("point-marker")) {
+              event.target.previousElementSibling.setAttribute("r", "10");
+            }
             const pollutantName = formatPollutant(key);
             tooltip.innerHTML = `<strong>${pollutantName} · ${item[key]} µg/m³</strong><br>${new Date(item.timestamp).toLocaleDateString()} ${new Date(item.timestamp).toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}<br>${item.city.trim()}<br><b>${category.name}</b> (${category.range})`;
             tooltip.style.display = "block";
@@ -2792,6 +2930,9 @@
           point.addEventListener("mouseenter", showPoint);
           point.addEventListener("click", event => { pinnedPoint = point; showPoint(event); });
           point.addEventListener("mouseleave", event => {
+            if (event.target.previousElementSibling?.classList.contains("point-marker")) {
+              event.target.previousElementSibling.setAttribute("r", "7");
+            }
             if (pinnedPoint !== point) tooltip.style.display = "none";
           });
         });
@@ -2839,6 +2980,10 @@
       document.getElementById("data-page").classList.toggle("page-hidden", link.dataset.page !== "data-page");
       document.getElementById("guidelines-page").classList.toggle("page-hidden", link.dataset.page !== "guidelines-page");
         document.getElementById("about-page").classList.toggle("page-hidden", link.dataset.page !== "about-page");
+      const activePage = document.getElementById(link.dataset.page);
+      activePage.classList.remove("aqms-page-transition");
+      void activePage.offsetWidth;
+      activePage.classList.add("aqms-page-transition");
       document.body.classList.toggle("data-view-active", link.dataset.page === "data-page");
       if (link.dataset.page === "lgu-page") renderLguDashboard();
       if (link.dataset.page === "reports-page") refreshAdvisoryControls();
@@ -2925,6 +3070,161 @@
 
     updateLiveDateTime();
     setInterval(updateLiveDateTime, 1000);
+  </script>
+  <script>
+    (() => {
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const revealTargets = [
+        ...document.querySelectorAll("main > section, main > .card, .kpis > .card, .station, .aqms-contact-card")
+      ].filter((element, index, elements) => elements.indexOf(element) === index);
+
+      revealTargets.forEach((element, index) => {
+        element.classList.add("aqms-reveal");
+        element.style.transitionDelay = reducedMotion ? "0ms" : `${Math.min(index % 8, 7) * 55}ms`;
+      });
+
+      const reveal = element => element.classList.add("is-visible");
+      document.querySelectorAll(".kpi,.station,.manual-station,.aqi-category").forEach(element => {
+        element.addEventListener("pointerenter", () => {
+          element.classList.add("aqms-pointer-hover");
+          if (element.matches(".kpi")) {
+            element.style.setProperty("transform", "translateY(-6px) scale(1.015)", "important");
+            element.style.setProperty("box-shadow", "0 14px 30px rgba(23,50,77,.18)", "important");
+          }
+          if (element.matches(".station,.manual-station")) {
+            element.style.setProperty("transform", "translateY(-6px)", "important");
+            element.style.setProperty("box-shadow", "0 14px 30px rgba(23,50,77,.18)", "important");
+          }
+          if (element.matches(".aqi-category")) {
+            element.style.setProperty("transform", "translateY(-5px)", "important");
+            element.style.setProperty("box-shadow", "0 10px 22px rgba(23,50,77,.14)", "important");
+            element.querySelector(".aqi-face")?.style.setProperty("transform", "scale(1.15) rotate(-4deg)", "important");
+          }
+        });
+        document.addEventListener("click", event => {
+          const card = event.target.closest(".station,.manual-station");
+          if (!card) return;
+          document.querySelectorAll(".station.aqms-selected,.manual-station.aqms-selected").forEach(selected => selected.classList.remove("aqms-selected"));
+          card.classList.add("aqms-selected");
+        });
+        element.addEventListener("pointerleave", () => {
+          element.classList.remove("aqms-pointer-hover");
+          element.style.removeProperty("transform");
+          element.style.removeProperty("box-shadow");
+          element.querySelector(".aqi-face")?.style.removeProperty("transform");
+        });
+        if (element.matches(".station,.manual-station")) {
+          element.addEventListener("click", () => {
+            document.querySelectorAll(".station.aqms-selected,.manual-station.aqms-selected").forEach(selected => selected.classList.remove("aqms-selected"));
+            element.classList.add("aqms-selected");
+          });
+        }
+      });
+      if (reducedMotion || !("IntersectionObserver" in window)) {
+        revealTargets.forEach(reveal);
+      } else {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            reveal(entry.target);
+            observer.unobserve(entry.target);
+          });
+        }, {threshold: .08, rootMargin: "0px 0px -24px"});
+        revealTargets.forEach(element => observer.observe(element));
+        revealTargets.forEach((element, index) => {
+          window.setTimeout(() => reveal(element), Math.min(index, 12) * 65);
+        });
+      }
+
+      const animateCounter = element => {
+        if (element.dataset.aqmsCounterAnimated === "true") return;
+        const match = element.textContent.trim().match(/^(\d[\d,]*)(.*)$/);
+        if (!match) return;
+        const target = Number(match[1].replace(/,/g, ""));
+        if (!Number.isFinite(target) || target < 1 || reducedMotion) {
+          element.dataset.aqmsCounterAnimated = "true";
+          return;
+        }
+        element.dataset.aqmsCounterAnimated = "true";
+        const suffix = match[2];
+        const duration = 650;
+        const started = performance.now();
+        const tick = now => {
+          const progress = Math.max(0, Math.min((now - started) / duration, 1));
+          const eased = 1 - Math.pow(1 - progress, 3);
+          element.textContent = `${Math.max(0, Math.round(target * eased)).toLocaleString()}${suffix}`;
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+
+      const counterObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      }, {threshold: .7});
+      document.querySelectorAll(".kpi .number").forEach(element => counterObserver.observe(element));
+
+      const markLiveIndicators = root => {
+        const candidates = [];
+        if (root.nodeType === Node.ELEMENT_NODE) candidates.push(root);
+        candidates.push(...root.querySelectorAll("*"));
+        candidates.forEach(element => {
+          if (element.children.length || element.dataset.aqmsLiveChecked === "true") return;
+          const text = element.textContent.trim();
+          if (/^(●\s*)?LIVE\b/i.test(text) || /^(●\s*)?MONITORING ACTIVE\b/i.test(text)) {
+            element.classList.add("aqms-live-pulse");
+          }
+          element.dataset.aqmsLiveChecked = "true";
+        });
+      };
+      markLiveIndicators(document);
+      const liveObserver = new MutationObserver(records => {
+        records.forEach(record => {
+          record.addedNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE) markLiveIndicators(node);
+          });
+          if (record.type === "characterData" && record.target.parentElement) {
+            markLiveIndicators(record.target.parentElement);
+          }
+        });
+      });
+      liveObserver.observe(document.body, {subtree: true, childList: true, characterData: true});
+
+      document.addEventListener("pointerdown", event => {
+        const target = event.target.closest("button,.btn,.aqms-contact-trigger,.aqms-chat-trigger");
+        if (!target || target.disabled || reducedMotion) return;
+        target.style.position = target.style.position || "relative";
+        target.style.overflow = "hidden";
+        const rect = target.getBoundingClientRect();
+        const ripple = document.createElement("span");
+        const size = Math.max(rect.width, rect.height);
+        ripple.className = "aqms-ripple";
+        ripple.style.width = `${size}px`;
+        ripple.style.height = `${size}px`;
+        ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+        ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+        target.appendChild(ripple);
+        window.setTimeout(() => ripple.remove(), 600);
+      });
+
+      const pageObserver = new MutationObserver(records => {
+        records.forEach(record => {
+          if (record.type !== "attributes" || record.attributeName !== "class") return;
+          const page = record.target;
+          if (!page.classList.contains("page-hidden")) {
+            page.querySelectorAll(".aqms-reveal").forEach((element, index) => {
+              element.style.transitionDelay = reducedMotion ? "0ms" : `${Math.min(index, 8) * 45}ms`;
+              requestAnimationFrame(() => reveal(element));
+            });
+          }
+        });
+      });
+      document.querySelectorAll("main[id$='-page']").forEach(page => pageObserver.observe(page, {attributes: true}));
+    })();
   </script>
 </body>
 </html>
