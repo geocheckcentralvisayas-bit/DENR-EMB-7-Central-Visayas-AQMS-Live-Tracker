@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DENR-EMB Central Visayas | AQMS</title>
   <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <style>
     .lgu-page .aqi-category{border-top:4px solid var(--muted)}
     .lgu-page .aqi-good{border-top-color:var(--green)}
@@ -2075,6 +2078,11 @@
         canvas.width = 1080;
         canvas.height = 1350;
         const context = canvas.getContext("2d");
+        await Promise.all([
+          document.fonts.load("900 42.8px Montserrat"),
+          document.fonts.load("800 36px Montserrat"),
+          document.fonts.load("900 27.8px Montserrat")
+        ]);
         const loadImage = source => new Promise(resolve => {
           const image = new Image();
           image.onload = () => resolve(image);
@@ -2111,7 +2119,7 @@
         drawContain(bagongLogo, logoX + logoSize + logoGap, logoY, logoSize, logoSize);
         context.textAlign = "center";
         context.fillStyle = "#FFD400";
-        context.font = "900 58px Segoe UI, Arial";
+        context.font = "900 42.8px Montserrat, Arial, sans-serif";
         context.shadowColor = "rgba(0,0,0,.35)";
         context.shadowBlur = 8;
         context.shadowOffsetY = 4;
@@ -2120,12 +2128,12 @@
         context.shadowBlur = 0;
         context.shadowOffsetY = 0;
         context.fillStyle = "#fff";
-        context.font = "800 36px Segoe UI, Arial";
+        context.font = "800 36px Montserrat, Arial, sans-serif";
         context.fillText("AIR QUALITY MONITORING", 540, 237);
         context.fillStyle = "#fff";
         context.fillRect(0, 260, 1080, 68);
         context.fillStyle = "#10346b";
-        context.font = "900 27px Segoe UI, Arial";
+        context.font = "900 27.8px Montserrat, Arial, sans-serif";
         context.fillText(filterLabel, 540, 303);
         context.fillStyle = "rgba(10,39,76,.86)";
         context.fillRect(0, 328, 1080, 70);
@@ -2141,6 +2149,7 @@
         advisoryText(context, stationTitle, 540, 472, 860, 36);
         context.font = "700 19px Segoe UI, Arial";
         context.fillText("(REAL-TIME PARTICULATE MATTER STATION)", 540, 541);
+        context.fillStyle = "#17324d";
         const tableLeft = 104;
         const tableTop = 578;
         const tableWidth = 872;
@@ -2479,7 +2488,7 @@
           return;
         }
         const category = summaryCategory(item, parameter);
-        valueElement.textContent = `${item[parameter]} µg/m³`;
+        valueElement.textContent = String(item[parameter]);
         categoryElement.textContent = category?.name || "No AQI category available";
         metaElement.textContent = `Station: ${item.station} · Observed: ${summaryDateTime(item)}`;
       };
